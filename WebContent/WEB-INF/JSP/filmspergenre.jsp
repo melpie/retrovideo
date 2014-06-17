@@ -18,6 +18,7 @@
 	</head>
 	
 	<body>
+		
 		<h1>Reservaties</h1>
 		
 		<nav>
@@ -27,7 +28,7 @@
 				<c:forEach var="genre" items="${genres}" varStatus="genreStatus">
 				
 					<c:url value="/reservaties/filmspergenre.htm" var="genreURL">
-						<c:param name="genre" value="${genre.id}"/>
+						<c:param name="genreid" value="${genre.id}"/>
 					</c:url>
 					
 					<c:choose>
@@ -48,8 +49,26 @@
  		<div class=filmContent>
  		
 	 		<c:forEach var="film" items="${films}" varStatus="filmStatus">
+	 			
 	 			<c:url value="/images/${film.id}.jpg" var="filmImage"/>
-			    <img src="${filmImage}" alt="${film.titel}"/>
+	 			
+	 			<c:url value="/film.htm" var="filmURL">
+					<c:param name="filmid" value="${film.id}"/>
+				</c:url>
+	 			
+	 			<c:choose>
+						<c:when test="${film.voorraad==film.gereserveerd}">
+							<a href="<c:out value='${filmURL}'/>">
+								<img src="${filmImage}" title="${film.titel}  (reservatie niet mogelijk)" alt="${film.titel}"/>
+							</a>							
+						</c:when>
+						<c:otherwise>
+							<a href="<c:out value='${filmURL}'/>">
+								<img src="${filmImage}" title="${film.titel} (reservatie mogelijk)" alt="${film.titel}"/>
+							</a>
+						</c:otherwise>
+				</c:choose>
+			    
 	 		</c:forEach>
 	 		
 	 	</div>

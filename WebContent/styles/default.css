@@ -1,4 +1,9 @@
-@CHARSET "ISO-8859-1";
+
+body {
+	width: 1024px;
+	margin: 0 auto;
+	background-color: #F8F4E3;
+}
 
 ul.genreMenu {
     list-style: none;
@@ -8,5 +13,5 @@ ul.genreMenu {
 
 ul.genreMenu li {
     display: inline;
-    margin-right: 5px;
+    margin-right: 10px;
 }

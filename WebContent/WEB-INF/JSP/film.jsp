@@ -19,26 +19,34 @@
 	
 	<body>
 	
-		<h1>Reservaties</h1>
+		<c:url value="/reservaties.htm" var="reservatiesURL"/>
+		<a href="<c:out value='${reservatiesURL}'/>">Reserveren</a>
 		
-		<nav>
-			
-			<ul class=genreMenu>
-			
-				<c:forEach var="genre" items="${genres}" varStatus="genreStatus">
-				
-					<c:url value="/reservaties/filmspergenre.htm" var="genreURL">
-						<c:param name="genreid" value="${genre.id}"/>
-					</c:url>
-					
-					<li><a href="<c:out value='${genreURL}'/>">${genre.naam}</a></li>
-							           
-		 		</c:forEach>
-	 		
-	 		</ul>	 		
- 		
- 		</nav>		
+		<h1>
+			${film.titel}
+		</h1>
+		
+		<c:url value="/images/${film.id}.jpg" var="filmImage"/>
+		
+		<img src="${filmImage}" title="${film.titel}" alt="${film.titel}"/>
+		
+		<br><br>
+		
+		Prijs <br>
+		<strong>&euro; ${film.prijs}</strong><br><br>
+		
+		Voorraad <br>
+		<strong>${film.voorraad}</strong><br><br>
+		
+		Gereserveerd <br>
+		<strong>${film.gereserveerd}</strong><br><br>
+		
+		Beschikbaar <br>
+		<strong>${film.voorraad - film.gereserveerd}</strong>
+		
+		<br>
+		
 		
 	</body>
-	
+
 </html>

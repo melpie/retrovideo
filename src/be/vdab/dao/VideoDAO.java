@@ -17,7 +17,9 @@ public class VideoDAO extends AbstractDAO {
 	
 	private static final String FIND_FILM_BY_GENRE_SQL =
 	    "select id,genreid,titel,voorraad,gereserveerd,prijs from films where genreid=?";	
-
+	
+	private static final String FIND_FILM_BY_ID_SQL =
+		    "select id,genreid,titel,voorraad,gereserveerd,prijs from films where id=?";	
 	
 	public Iterable<Genre> getGenres() {
 		try (Connection connection = getConnection();
@@ -52,6 +54,23 @@ public class VideoDAO extends AbstractDAO {
             throw new DAOException("Kan films niet lezen uit database", ex);
         }
     }
+	
+	public Film findFilmByID(long filmid) {
+        try (Connection connection = getConnection();
+                PreparedStatement statement = connection.prepareStatement(FIND_FILM_BY_ID_SQL);) {
+            Film film = null;
+            statement.setLong(1, filmid);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    film = resultSetRijNaarFilm(resultSet);
+                }
+                return film;
+            }
+        } catch (SQLException ex) {
+            throw new DAOException("Kan film niet lezen uit database", ex);
+        }
+	}
+	
 	
 	private Film resultSetRijNaarFilm(ResultSet resultSet) throws SQLException {
 		return new Film(resultSet.getLong("id"), resultSet.getLong("genreid"), resultSet.getString("titel"), resultSet.getLong("voorraad")

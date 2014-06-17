@@ -12,7 +12,7 @@ import be.vdab.dao.VideoDAO;
  * Servlet implementation class ReservatiesPerGenre
  */
 @WebServlet("/reservaties/filmspergenre.htm")
-public class ReservatiesPerGenre extends HttpServlet {
+public class ReservatiesPerGenreServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	private final VideoDAO videoDAO = new VideoDAO();
@@ -20,7 +20,7 @@ public class ReservatiesPerGenre extends HttpServlet {
        
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		Long genre = Long.parseLong(request.getParameter("genre"));		
+		Long genre = Long.parseLong(request.getParameter("genreid"));		
 		request.setAttribute("films", videoDAO.findFilmsByGenre(genre));
 		request.setAttribute("genres", videoDAO.getGenres());
 		request.setAttribute("huidiggenre", genre);
