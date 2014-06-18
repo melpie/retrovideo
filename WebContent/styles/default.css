@@ -29,6 +29,11 @@ table {
 
 table, th, td {
      border: 1px solid silver;
+     padding: 3px 20px;
+}
+
+th, td {
+	min-wide: 200px;	
 }
 
 th {

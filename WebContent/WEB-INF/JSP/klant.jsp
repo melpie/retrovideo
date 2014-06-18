@@ -24,46 +24,60 @@
 			<ul class=genreMenu>
 			
 				<c:url value="/reservaties.htm" var="reserverenURL"/>
-				<c:url value="/klant.htm" var="klantURL"/>
+				<c:url value="/mandje.htm" var="mandjeURL"/>
 					
 				<li><a href="<c:out value='${reserverenURL}'/>">Reserveren</a></li>
-				<li><a href="<c:out value='${klantURL}'/>">Klant</a></li>
+				<li><a href="<c:out value='${mandjeURL}'/>">Mandje</a></li>
 							           
 	 		</ul>	 		
  		
  		</nav>
  		
- 		<h1>Mandje</h1> 		
+ 		<h1>Klant</h1> 	
  		
- 		<c:url value="/mandje.htm" var="mandjeURL"/>
+ 		<c:url value="/klant.htm" var="klantURL"/>
  		
- 		<form action="${mandjeURL}" method="post">
+ 		<form action="${klantURL}" method="get">
  		
-	 		<table cellspacing='0'> 
+	 		Familienaam bevat:<br><br>
+	 		<input type="text" name="familienaam"><br><br>
+	 		<input type="submit" value="Zoeken"/>
+ 		 		
+ 		</form>
+ 		
+ 		
+ 		<c:if test="${not empty klanten}">
+ 		
+ 			<table cellspacing='0'> 
 									
 				<thead>
 					<tr>
-						<th>Film</th>
-						<th>Prijs</th>
-						<th><input type="submit" value="Verwijderen"/></th>
+						<th>Naam</th>
+						<th>Straat - Huisnummer</th>
+						<th>Postcode</th>
+						<th>Gemeente</th>
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="film" items="${filmsInMandje}">
+					<c:forEach var="klant" items="${klanten}">
+						
+						<c:url value="/bevestigen.htm" var="bevestigenURL">
+							<c:param name="klantid" value="${klant.id}"/>	
+						</c:url>
+						
 						<tr>
-							<td>${film.titel}</td>
-							<td>&euro; ${film.prijs}</td>
-							<td>
-								<label><input type="checkbox" name="verwijderFilmNrs" value="${film.id}"></label>
-							</td>
+							<td><a href="<c:out value='${bevestigenURL}'/>">${klant.familienaam} ${klant.voornaam}</a></td>
+							<td>${klant.straatNummer}</td>
+							<td>${klant.postcode}</td>
+							<td>${klant.gemeente}</td>
 						</tr>
 					</c:forEach>
 				</tbody>
 				
 			</table>
  		
- 		</form>
- 		
-	</body>
-	
+ 		</c:if>
+		
+	</body>	
+
 </html>

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import be.vdab.entities.Film;
 import be.vdab.entities.Genre;
+import be.vdab.entities.Klant;
 
 public class VideoDAO extends AbstractDAO {
 	
@@ -19,7 +20,10 @@ public class VideoDAO extends AbstractDAO {
 	    "select id,genreid,titel,voorraad,gereserveerd,prijs from films where genreid=?";	
 	
 	private static final String FIND_FILM_BY_ID_SQL =
-		    "select id,genreid,titel,voorraad,gereserveerd,prijs from films where id=?";	
+		"select id,genreid,titel,voorraad,gereserveerd,prijs from films where id=?";
+	
+	private static final String FIND_KLANTEN_BY_SEARCHSTRING_SQL = 
+		"select id,familienaam,voornaam,straatNummer,postcode,gemeente from klanten where familienaam like ?";
 	
 	public Iterable<Genre> getGenres() {
 		try (Connection connection = getConnection();
@@ -76,5 +80,27 @@ public class VideoDAO extends AbstractDAO {
 		return new Film(resultSet.getLong("id"), resultSet.getLong("genreid"), resultSet.getString("titel"), resultSet.getLong("voorraad")
 				, resultSet.getLong("gereserveerd"), resultSet.getDouble("prijs"));
 	}
+	
+	public Iterable<Klant> findKlantenBySearchString(String searchstring) {
+        try (Connection connection = getConnection();
+                PreparedStatement statement = connection.prepareStatement(FIND_KLANTEN_BY_SEARCHSTRING_SQL);) {
+            List<Klant> klanten = new ArrayList<>();
+            statement.setString(1, "%"+searchstring+"%");
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    klanten.add(resultSetRijNaarKlant(resultSet));
+                }
+                return klanten;
+            }
+        } catch (SQLException ex) {
+            throw new DAOException("Kan klanten niet lezen uit database", ex);
+        }
+    }
+	
+	private Klant resultSetRijNaarKlant(ResultSet resultSet) throws SQLException {
+		return new Klant(resultSet.getLong("id"), resultSet.getString("familienaam"), resultSet.getString("voornaam"), resultSet.getString("straatNummer")
+				, resultSet.getString("postcode"), resultSet.getString("gemeente"));
+	}
+	
 
 }
