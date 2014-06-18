@@ -44,8 +44,15 @@
 		Beschikbaar <br>
 		<strong>${film.voorraad - film.gereserveerd}</strong>
 		
-		<br>
+		<br><br>
 		
+		<c:url value="/mandje.htm" var="mandjeURL">
+			<c:param name="filmid" value="${film.id}"/>
+		</c:url>
+		
+		<form action="${mandjeURL}" method="post">
+			<input type="submit" value="In mandje" id="filminmandje"/>
+		</form>
 		
 	</body>
 

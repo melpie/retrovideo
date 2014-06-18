@@ -1,18 +1,13 @@
 package be.vdab.servlets;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import be.vdab.dao.VideoDAO;
 
-/**
- * Servlet implementation class FilmServlet
- */
 @WebServlet("/film.htm")
 public class FilmServlet extends HttpServlet {
 	
@@ -24,8 +19,7 @@ public class FilmServlet extends HttpServlet {
 		
 		try {
 			Long filmid = Long.parseLong(request.getParameter("filmid"));		
-			request.setAttribute("film", videoDAO.findFilmByID(filmid));
-						
+			request.setAttribute("film", videoDAO.findFilmByID(filmid));						
 		} catch (NumberFormatException ex) {
             request.setAttribute("fout", "filmid niet correct");
         }

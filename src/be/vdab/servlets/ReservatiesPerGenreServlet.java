@@ -8,9 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import be.vdab.dao.VideoDAO;
 
-/**
- * Servlet implementation class ReservatiesPerGenre
- */
 @WebServlet("/reservaties/filmspergenre.htm")
 public class ReservatiesPerGenreServlet extends HttpServlet {
 	

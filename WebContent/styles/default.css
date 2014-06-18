@@ -1,6 +1,6 @@
 
 body {
-	width: 1024px;
+	width: 65%;
 	margin: 0 auto;
 	background-color: #F8F4E3;
 }
@@ -15,3 +15,24 @@ ul.genreMenu li {
     display: inline;
     margin-right: 10px;
 }
+
+.floatedImage {
+	width:214px;
+	height:330px;
+	float:left;
+	margin:1em;
+}
+
+table {
+     border-collapse: collapse;
+ }
+
+table, th, td {
+     border: 1px solid silver;
+}
+
+th {
+     background-color: grey;
+     color: white;
+     height: 50px;
+ }
