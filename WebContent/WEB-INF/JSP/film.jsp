@@ -22,37 +22,61 @@
 		<c:url value="/reservaties.htm" var="reservatiesURL"/>
 		<a href="<c:out value='${reservatiesURL}'/>">Reserveren</a>
 		
-		<h1>
-			${film.titel}
-		</h1>
+		<br>
 		
-		<c:url value="/images/${film.id}.jpg" var="filmImage"/>
+		<c:choose>
 		
-		<img src="${filmImage}" title="${film.titel}" alt="${film.titel}"/>
-		
-		<br><br>
-		
-		Prijs <br>
-		<strong>&euro; ${film.prijs}</strong><br><br>
-		
-		Voorraad <br>
-		<strong>${film.voorraad}</strong><br><br>
-		
-		Gereserveerd <br>
-		<strong>${film.gereserveerd}</strong><br><br>
-		
-		Beschikbaar <br>
-		<strong>${film.voorraad - film.gereserveerd}</strong>
-		
-		<br><br>
-		
-		<c:url value="/mandje.htm" var="mandjeURL">
-			<c:param name="filmid" value="${film.id}"/>
-		</c:url>
-		
-		<form action="${mandjeURL}" method="post">
-			<input type="submit" value="In mandje" id="filminmandje"/>
-		</form>
+			<c:when test="${not empty foutFilmid}">
+				${foutFilmid} Ga terug naar pagina Reserveren en kies een film. 
+			</c:when>
+				
+			<c:otherwise>
+				
+				<h1>
+					${film.titel}
+				</h1>
+
+				<c:url value="/images/${film.id}.jpg" var="filmImage"/>
+				
+				<c:choose>
+					<c:when test="${film.voorraad==film.gereserveerd}">
+						<img src="${filmImage}" title="${film.titel}  (reservatie niet mogelijk)" alt="${film.titel}"/>
+					</c:when>
+					<c:otherwise>
+						<img src="${filmImage}" title="${film.titel} (reservatie mogelijk)" alt="${film.titel}"/>
+					</c:otherwise>
+				</c:choose>
+				
+				<br><br>
+				
+				Prijs <br>
+				<strong>&euro; ${film.prijs}</strong><br><br>
+				
+				Voorraad <br>
+				<strong>${film.voorraad}</strong><br><br>
+				
+				Gereserveerd <br>
+				<strong>${film.gereserveerd}</strong><br><br>
+				
+				Beschikbaar <br>
+				<strong>${film.voorraad - film.gereserveerd}</strong>
+				
+				<br><br>
+				
+				<c:url value="/mandje.htm" var="mandjeURL">
+					<c:param name="filmid" value="${film.id}"/>
+				</c:url>
+				
+				<c:if test="${film.voorraad>film.gereserveerd}">
+					<form action="${mandjeURL}" method="post">
+						<input type="submit" value="In mandje" id="filminmandje"/>
+					</form>
+				</c:if>
+				
+				
+			</c:otherwise>	
+				
+		</c:choose>		
 		
 	</body>
 

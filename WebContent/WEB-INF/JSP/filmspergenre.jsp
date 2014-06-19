@@ -46,36 +46,48 @@
  		
  		</nav>
  		
- 		<div class=filmContent>
+ 		<c:choose>
  		
-	 		<c:forEach var="film" items="${films}" varStatus="filmStatus">
-	 			
-	 			<div class="floatedImage">
-	 			
-		 			<c:url value="/images/${film.id}.jpg" var="filmImage"/>
-		 			
-		 			<c:url value="/film.htm" var="filmURL">
-						<c:param name="filmid" value="${film.id}"/>
-					</c:url>
-		 			
-		 			<c:choose>
-							<c:when test="${film.voorraad==film.gereserveerd}">
-								<a href="<c:out value='${filmURL}'/>">
-									<img src="${filmImage}" title="${film.titel}  (reservatie niet mogelijk)" alt="${film.titel}"/>
-								</a>							
-							</c:when>
-							<c:otherwise>
-								<a href="<c:out value='${filmURL}'/>">
-									<img src="${filmImage}" title="${film.titel} (reservatie mogelijk)" alt="${film.titel}"/>
-								</a>
-							</c:otherwise>
-					</c:choose>
-					
-				</div>
-			    
-	 		</c:forEach>
-	 		
-	 	</div>
+ 			<c:when test="${not empty foutGenreid}">
+ 				${foutGenreid} Kies een genre.
+ 			</c:when>
+ 		
+ 			<c:otherwise>
+ 			
+		 		<div class=filmContent>
+		 		
+			 		<c:forEach var="film" items="${films}" varStatus="filmStatus">
+			 			
+			 			<div class="floatedImage">
+			 			
+				 			<c:url value="/images/${film.id}.jpg" var="filmImage"/>
+				 			
+				 			<c:url value="/film.htm" var="filmURL">
+								<c:param name="filmid" value="${film.id}"/>
+							</c:url>
+				 			
+				 			<c:choose>
+									<c:when test="${film.voorraad==film.gereserveerd}">
+										<a href="<c:out value='${filmURL}'/>">
+											<img src="${filmImage}" title="${film.titel}  (reservatie niet mogelijk)" alt="${film.titel}"/>
+										</a>							
+									</c:when>
+									<c:otherwise>
+										<a href="<c:out value='${filmURL}'/>">
+											<img src="${filmImage}" title="${film.titel} (reservatie mogelijk)" alt="${film.titel}"/>
+										</a>
+									</c:otherwise>
+							</c:choose>
+							
+						</div>
+					    
+			 		</c:forEach>
+			 		
+			 	</div>
+			 	
+			 </c:otherwise>
+			 	
+		</c:choose>
 	
 	</body>
 	

@@ -33,36 +33,48 @@
  		
  		</nav>
  		
- 		<h1>Mandje</h1> 		
+ 		<c:choose>
  		
- 		<c:url value="/mandje.htm" var="mandjeURL"/>
+ 			<c:when test="${not empty foutSession}">
+ 				${foutSession} Ga terug naar Reserveren pagina en kies een film.
+ 			</c:when>
  		
- 		<form action="${mandjeURL}" method="post">
+ 			<c:otherwise>
  		
-	 		<table cellspacing='0'> 
-									
-				<thead>
-					<tr>
-						<th>Film</th>
-						<th>Prijs</th>
-						<th><input type="submit" value="Verwijderen"/></th>
-					</tr>
-				</thead>
-				<tbody>
-					<c:forEach var="film" items="${filmsInMandje}">
-						<tr>
-							<td>${film.titel}</td>
-							<td>&euro; ${film.prijs}</td>
-							<td>
-								<label><input type="checkbox" name="verwijderFilmNrs" value="${film.id}"></label>
-							</td>
-						</tr>
-					</c:forEach>
-				</tbody>
-				
-			</table>
- 		
- 		</form>
+		 		<h1>Mandje</h1> 		
+		 		
+		 		<c:url value="/mandje.htm" var="mandjeURL"/>
+		 		
+		 		<form action="${mandjeURL}" method="post">
+		 		
+			 		<table cellspacing='0'> 
+											
+						<thead>
+							<tr>
+								<th>Film</th>
+								<th>Prijs</th>
+								<th><input type="submit" value="Verwijderen"/></th>
+							</tr>
+						</thead>
+						<tbody>
+							<c:forEach var="film" items="${filmsInMandje}">
+								<tr>
+									<td>${film.titel}</td>
+									<td>&euro; ${film.prijs}</td>
+									<td>
+										<label><input type="checkbox" name="verwijderFilmNrs" value="${film.id}"></label>
+									</td>
+								</tr>
+							</c:forEach>
+						</tbody>
+						
+					</table>
+		 		
+		 		</form>
+		 		
+		 	</c:otherwise>	
+		 		
+		 </c:choose>
  		
 	</body>
 	

@@ -45,6 +45,7 @@
  		 		
  		</form>
  		
+ 		<br>
  		
  		<c:if test="${not empty klanten}">
  		

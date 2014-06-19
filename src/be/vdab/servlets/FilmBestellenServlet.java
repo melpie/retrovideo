@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import be.vdab.dao.VideoDAO;
 import be.vdab.entities.Film;
 
@@ -37,8 +39,10 @@ public class FilmBestellenServlet extends HttpServlet {
 				}
 			request.setAttribute("filmsInMandje", filmsInMandje);
 			}
+		} else {
+			request.setAttribute("foutSession", "Mandje niet gevuld.");		
 		}
-		
+				
 		RequestDispatcher dispatcher = request.getRequestDispatcher(VIEW);
 		dispatcher.forward(request, response);
 		
@@ -46,11 +50,11 @@ public class FilmBestellenServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+		HttpSession session = request.getSession();
+		@SuppressWarnings("unchecked")
+		Set<Long> filmNrsInMandje = (Set<Long>) session.getAttribute("mandje");
+		
 		if (request.getParameter("filmid") != null) {
-			
-			HttpSession session = request.getSession();
-			@SuppressWarnings("unchecked")
-			Set<Long> filmNrsInMandje = (Set<Long>) session.getAttribute("mandje");
 			
 			if (filmNrsInMandje == null) {
 				filmNrsInMandje = new LinkedHashSet<>();
@@ -59,22 +63,18 @@ public class FilmBestellenServlet extends HttpServlet {
 			try {
 				filmNrsInMandje.add(Long.parseLong(request.getParameter("filmid")));
 				session.setAttribute("mandje", filmNrsInMandje);
-			} catch (Exception ex) {
-				// een hacker heeft in de parameter nummer niet-getallen geplaatst
+			} catch (NumberFormatException ex) {
+				
 			}
 			
 		} else if (request.getParameterValues("verwijderFilmNrs") != null) {
-			
-			HttpSession session = request.getSession();
-			@SuppressWarnings("unchecked")
-			Set<Long> filmNrsInMandje = (Set<Long>) session.getAttribute("mandje"); 
 			
 			for (String nummerAlsString:request.getParameterValues("verwijderFilmNrs")){
 				try {
 					long nummer = Long.parseLong(nummerAlsString);
 					filmNrsInMandje.remove(nummer);
 					session.setAttribute("mandje", filmNrsInMandje);
-				} catch (Exception ex) {
+				} catch (NumberFormatException ex) {
 					
 				}				
 			}

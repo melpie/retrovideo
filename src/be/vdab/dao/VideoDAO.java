@@ -10,6 +10,7 @@ import java.util.List;
 import be.vdab.entities.Film;
 import be.vdab.entities.Genre;
 import be.vdab.entities.Klant;
+import be.vdab.entities.Reservatie;
 
 public class VideoDAO extends AbstractDAO {
 	
@@ -25,10 +26,19 @@ public class VideoDAO extends AbstractDAO {
 	private static final String FIND_KLANTEN_BY_SEARCHSTRING_SQL = 
 		"select id,familienaam,voornaam,straatNummer,postcode,gemeente from klanten where familienaam like ?";
 	
+	private static final String FIND_KLANT_BY_ID_SQL = 
+		"select id,familienaam,voornaam,straatNummer,postcode,gemeente from klanten where id=?";
+	
+	private static final String CREATE_RESERVATIE_SQL =
+		"insert into reservaties(klantid,filmid,reservatieDatum) values (?,?,?)";
+	
+	private static final String UPDATE_FILMS_SQL =
+		"update films set gereserveerd=gereserveerd+1 where id=? and voorraad>gereserveerd";
+	
 	public Iterable<Genre> getGenres() {
-		try (Connection connection = getConnection();
+		try (Connection connection = getConnection()) {
 			Statement statement = connection.createStatement();
-			ResultSet resultSet = statement.executeQuery(FIND_GENRES_SQL);) {
+			ResultSet resultSet = statement.executeQuery(FIND_GENRES_SQL);
 			List<Genre> genres = new ArrayList<>();
 			while (resultSet.next()) {
 				genres.add(resultSetRijNaarGenre(resultSet));
@@ -44,46 +54,44 @@ public class VideoDAO extends AbstractDAO {
 	}
 	
 	public Iterable<Film> findFilmsByGenre(long genreid) {
-        try (Connection connection = getConnection();
-                PreparedStatement statement = connection.prepareStatement(FIND_FILM_BY_GENRE_SQL);) {
+        try (Connection connection = getConnection()) {
+        	PreparedStatement statement = connection.prepareStatement(FIND_FILM_BY_GENRE_SQL);
             List<Film> films = new ArrayList<>();
             statement.setLong(1, genreid);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    films.add(resultSetRijNaarFilm(resultSet));
-                }
-                return films;
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                films.add(resultSetRijNaarFilm(resultSet));
             }
+            return films;
         } catch (SQLException ex) {
             throw new DAOException("Kan films niet lezen uit database", ex);
         }
     }
 	
 	public Film findFilmByID(long filmid) {
-        try (Connection connection = getConnection();
-                PreparedStatement statement = connection.prepareStatement(FIND_FILM_BY_ID_SQL);) {
+        try (Connection connection = getConnection()) {
+        	PreparedStatement statement = connection.prepareStatement(FIND_FILM_BY_ID_SQL);
             Film film = null;
             statement.setLong(1, filmid);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    film = resultSetRijNaarFilm(resultSet);
-                }
-                return film;
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                film = resultSetRijNaarFilm(resultSet);
             }
+            return film;
         } catch (SQLException ex) {
             throw new DAOException("Kan film niet lezen uit database", ex);
         }
 	}
-	
-	
+		
 	private Film resultSetRijNaarFilm(ResultSet resultSet) throws SQLException {
-		return new Film(resultSet.getLong("id"), resultSet.getLong("genreid"), resultSet.getString("titel"), resultSet.getLong("voorraad")
+		return new Film(resultSet.getLong("id"), resultSet.getLong("genreid")
+				, resultSet.getString("titel"), resultSet.getLong("voorraad")
 				, resultSet.getLong("gereserveerd"), resultSet.getDouble("prijs"));
 	}
 	
 	public Iterable<Klant> findKlantenBySearchString(String searchstring) {
-        try (Connection connection = getConnection();
-                PreparedStatement statement = connection.prepareStatement(FIND_KLANTEN_BY_SEARCHSTRING_SQL);) {
+        try (Connection connection = getConnection()) {
+        	PreparedStatement statement = connection.prepareStatement(FIND_KLANTEN_BY_SEARCHSTRING_SQL);
             List<Klant> klanten = new ArrayList<>();
             statement.setString(1, "%"+searchstring+"%");
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -97,10 +105,54 @@ public class VideoDAO extends AbstractDAO {
         }
     }
 	
+	public Klant findKlantByID(long klantid) {
+        try (Connection connection = getConnection()) {
+        	PreparedStatement statement = connection.prepareStatement(FIND_KLANT_BY_ID_SQL);
+        	Klant klant = null;
+            statement.setLong(1, klantid);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                klant = resultSetRijNaarKlant(resultSet);
+            }
+            return klant;
+        } catch (SQLException ex) {
+            throw new DAOException("Kan klant niet lezen uit database", ex);
+        }
+	}
+	
 	private Klant resultSetRijNaarKlant(ResultSet resultSet) throws SQLException {
-		return new Klant(resultSet.getLong("id"), resultSet.getString("familienaam"), resultSet.getString("voornaam"), resultSet.getString("straatNummer")
+		return new Klant(resultSet.getLong("id"), resultSet.getString("familienaam")
+				, resultSet.getString("voornaam"), resultSet.getString("straatNummer")
 				, resultSet.getString("postcode"), resultSet.getString("gemeente"));
 	}
 	
-
+	public void createReservatie(long klantid,long filmid) {
+		try (Connection connection = getConnection()) {
+			PreparedStatement statementCreate = connection.prepareStatement(CREATE_RESERVATIE_SQL);
+			PreparedStatement statementUpdate = connection.prepareStatement(UPDATE_FILMS_SQL);
+			PreparedStatement statementSelect = connection.prepareStatement(FIND_FILM_BY_ID_SQL);
+			connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+			connection.setAutoCommit(false);
+			statementSelect.setLong(1, filmid);
+			ResultSet resultSet = statementSelect.executeQuery();
+			if (resultSet.next()) {
+				Long voorraad = resultSet.getLong("voorraad");
+				Long gereserveerd = resultSet.getLong("gereserveerd");
+				if (voorraad>gereserveerd) {
+					Reservatie reservatie=new Reservatie(klantid,filmid);
+					statementCreate.setLong(1, reservatie.getKlantid());
+					statementCreate.setLong(2, reservatie.getFilmid());
+					statementCreate.setDate(3, reservatie.getReservatieDatum());
+					statementUpdate.setLong(1, filmid);
+					statementUpdate.execute();
+					statementCreate.execute();
+					connection.commit();
+				}
+			}	
+		}
+		catch (SQLException ex) {
+			throw new DAOException("Kan reservatie niet toevoegen aan database", ex);
+		}
+	}
+	
 }
