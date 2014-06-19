@@ -40,7 +40,13 @@
  		<form action="${klantURL}" method="get">
  		
 	 		Familienaam bevat:<br><br>
-	 		<input type="text" name="familienaam"><br><br>
+	 		<label class="fout">
+		 		<input type="text" name="familienaam">
+		 		<c:if test="${not empty fout}">
+		 			${fout}	 		
+		 		</c:if>
+	 		</label>
+	 		<br><br>
 	 		<input type="submit" value="Zoeken"/>
  		 		
  		</form>

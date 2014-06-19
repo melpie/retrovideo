@@ -19,10 +19,12 @@ public class KlantServlet extends HttpServlet {
 		
 		String familieNaam = request.getParameter("familienaam");
 		
-		if(familieNaam != null) {
+		if (familieNaam == "") {
+			request.setAttribute("fout", "Tik minsten één letter.");
+		} else if(familieNaam != null) {
 			request.setAttribute("klanten", videoDAO.findKlantenBySearchString(familieNaam));
-		}		
-		
+		} 
+	
 		request.getRequestDispatcher(VIEW).forward(request, response);
 	}
 	

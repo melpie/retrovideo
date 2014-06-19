@@ -37,7 +37,11 @@ th, td {
 }
 
 th {
-     background-color: grey;
-     color: white;
-     height: 50px;
- }
+	background-color: grey;
+    color: white;
+    height: 50px;
+}
+
+.fout {
+	color:red;
+}
