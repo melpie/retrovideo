@@ -35,6 +35,11 @@ public class VideoDAO extends AbstractDAO {
 	private static final String UPDATE_FILMS_SQL =
 		"update films set gereserveerd=gereserveerd+1 where id=? and voorraad>gereserveerd";
 	
+	private static final String FIND_RESERVATIES_SQL =
+			"select titel,familienaam,voornaam,reservatieDatum from films " 
+			+ "inner join (klanten inner join reservaties on klanten.id=reservaties.klantid) " 
+			+ "on films.id=reservaties.filmid order by titel";
+	
 	public Iterable<Genre> getGenres() {
 		try (Connection connection = getConnection()) {
 			Statement statement = connection.createStatement();
@@ -139,10 +144,10 @@ public class VideoDAO extends AbstractDAO {
 				Long voorraad = resultSet.getLong("voorraad");
 				Long gereserveerd = resultSet.getLong("gereserveerd");
 				if (voorraad>gereserveerd) {
-					Reservatie reservatie=new Reservatie(klantid,filmid);
-					statementCreate.setLong(1, reservatie.getKlantid());
-					statementCreate.setLong(2, reservatie.getFilmid());
-					statementCreate.setDate(3, reservatie.getReservatieDatum());
+					statementCreate.setLong(1, klantid);
+					statementCreate.setLong(2, filmid);
+					java.util.Date today = new java.util.Date();
+					statementCreate.setDate(3, new java.sql.Date(today.getTime()));
 					statementUpdate.setLong(1, filmid);
 					statementUpdate.execute();
 					statementCreate.execute();
@@ -153,6 +158,25 @@ public class VideoDAO extends AbstractDAO {
 		catch (SQLException ex) {
 			throw new DAOException("Kan reservatie niet toevoegen aan database", ex);
 		}
+	}
+	
+	public Iterable<Reservatie> getReservaties() {
+		try (Connection connection = getConnection()) {
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(FIND_RESERVATIES_SQL);
+			List<Reservatie> reservaties = new ArrayList<>();
+			while (resultSet.next()) {
+				reservaties.add(resultSetRijNaarReservatie(resultSet));
+			}
+			return reservaties;
+		} catch (SQLException ex) {
+			throw new DAOException("Kan reservaties niet lezen uit database", ex);
+		}
+	}
+	
+	private Reservatie resultSetRijNaarReservatie(ResultSet resultSet) throws SQLException {
+		return new Reservatie(resultSet.getString("titel"), resultSet.getString("familienaam")
+				, resultSet.getString("voornaam"), resultSet.getDate("reservatieDatum"));
 	}
 	
 }

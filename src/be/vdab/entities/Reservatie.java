@@ -1,33 +1,44 @@
 package be.vdab.entities;
 
+import java.sql.Date;
+
 public class Reservatie {
 	
-	private long klantid;
-	private long filmid;
+	private String titel;
+	private String familienaam;
+	private String voornaam;
 	private java.sql.Date reservatieDatum;
 	
-	public Reservatie(long klantid, long filmid) {
+	public Reservatie(String titel, String familienaam, String voornaam, Date reservatieDatum) {
 		super();
-		this.klantid = klantid;
-		this.filmid = filmid;
-		java.util.Date today = new java.util.Date();
-		this.reservatieDatum = new java.sql.Date(today.getTime());
+		this.titel = titel;
+		this.familienaam = familienaam;
+		this.voornaam = voornaam;
+		this.reservatieDatum = reservatieDatum;
 	}
 
-	public long getKlantid() {
-		return klantid;
+	public String getTitel() {
+		return titel;
 	}
 
-	public void setKlantid(long klantid) {
-		this.klantid = klantid;
+	public void setTitel(String titel) {
+		this.titel = titel;
 	}
 
-	public long getFilmid() {
-		return filmid;
+	public String getFamilienaam() {
+		return familienaam;
 	}
 
-	public void setFilmid(long filmid) {
-		this.filmid = filmid;
+	public void setFamilienaam(String familienaam) {
+		this.familienaam = familienaam;
+	}
+
+	public String getVoornaam() {
+		return voornaam;
+	}
+
+	public void setVoornaam(String voornaam) {
+		this.voornaam = voornaam;
 	}
 
 	public java.sql.Date getReservatieDatum() {
