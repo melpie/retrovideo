@@ -1,3 +1,5 @@
+//
+
 package be.vdab.servlets;
 
 import java.io.IOException;
@@ -20,7 +22,7 @@ public class KlantServlet extends HttpServlet {
 		String familieNaam = request.getParameter("familienaam");
 		
 		if (familieNaam == "") {
-			request.setAttribute("fout", "Tik minstens één letter.");
+			request.setAttribute("fout", "Tik minstens Ã©Ã©n letter.");
 		} else if(familieNaam != null) {
 			request.setAttribute("klanten", videoDAO.findKlantenBySearchString(familieNaam));
 		} 
